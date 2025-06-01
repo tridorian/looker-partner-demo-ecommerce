@@ -376,7 +376,7 @@ explore: ecomm_predict {
 ############ Book Retail Explores #############
 
 explore: bbw_jakarta_operations {
-  label: "(9) BBW Jakarta Mall Operations"
+  label: "(9) BBW Jakarta Mall Operations."
   view_name: order_items
   description: "Comprehensive view of Big Bad Wolf Books Jakarta operations"
 
