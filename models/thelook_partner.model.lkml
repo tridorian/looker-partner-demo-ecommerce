@@ -372,3 +372,108 @@ explore: ecomm_predict {
     sql_on: ${order_facts.order_id} = ${order_items.order_id} ;;
   }
 }
+
+############ Book Retail Explores #############
+
+explore: bbw_jakarta_operations {
+  label: "(9) BBW Jakarta Mall Operations"
+  view_name: order_items
+  description: "Comprehensive view of Big Bad Wolf Books Jakarta operations"
+
+  join: repeat_purchase_facts {
+    view_label: "Repeat Purchase Facts"
+    relationship: many_to_one
+    type: full_outer
+    sql_on: ${order_items.order_id} = ${repeat_purchase_facts.order_id} ;;
+  }
+
+  join: products {
+    view_label: "📚 Books"
+    type: left_outer
+    relationship: many_to_one
+    sql_on: ${products.id} = ${inventory_items.product_id} ;;
+    fields: [book_genre, book_title, book_publisher, book_language, book_format, book_price_tier_idr]
+  }
+
+  join: inventory_items {
+    view_label: "📦 Inventory"
+    type: left_outer
+    relationship: one_to_one
+    sql_on: ${inventory_items.id} = ${order_items.inventory_item_id} ;;
+  }
+
+  join: distribution_centers {
+    view_label: "🏬 Jakarta Malls"
+    type: left_outer
+    relationship: many_to_one
+    sql_on: ${distribution_centers.id} = ${inventory_items.product_distribution_center_id} ;;
+    fields: [jakarta_mall, mall_tier, transportation_access, target_demographic]
+  }
+
+  join: users {
+    view_label: "👥 Jakarta Customers"
+    type: left_outer
+    relationship: many_to_one
+    sql_on: ${order_items.user_id} = ${users.id} ;;
+    fields: [jakarta_district, customer_segment_jakarta, traffic_source_indonesia,
+      reading_preference, age, gender, created_date]
+  }
+
+  join: order_facts {
+    view_label: "📋 Order Details"
+    type: left_outer
+    relationship: many_to_one
+    sql_on: ${order_facts.order_id} = ${order_items.order_id} ;;
+  }
+}
+
+explore: bbw_customer_analytics {
+  label: "(10) BBW Customer Journey Analytics"
+  extends: [bbw_jakarta_operations]
+  view_name: order_items
+  description: "Deep-dive into Jakarta customer behavior and preferences"
+
+  join: user_order_facts {
+    view_label: "👤 Customer History"
+    type: left_outer
+    relationship: many_to_one
+    sql_on: ${user_order_facts.user_id} = ${order_items.user_id} ;;
+  }
+
+  join: repeat_purchase_facts {
+    view_label: "🔄 Repeat Purchases"
+    relationship: many_to_one
+    type: left_outer
+    sql_on: ${order_items.order_id} = ${repeat_purchase_facts.order_id} ;;
+  }
+}
+
+explore: bbw_real_time_inventory {
+  label: "(11) BBW Real-time Inventory Management"
+  view_name: inventory_items
+  description: "Live inventory tracking for Jakarta book fair events"
+
+  join: products {
+    view_label: "📚 Book Details"
+    type: left_outer
+    relationship: many_to_one
+    sql_on: ${products.id} = ${inventory_items.product_id} ;;
+    fields: [book_genre, book_title, book_publisher, book_language]
+  }
+
+  join: distribution_centers {
+    view_label: "🏬 Mall Locations"
+    type: left_outer
+    relationship: many_to_one
+    sql_on: ${distribution_centers.id} = ${inventory_items.product_distribution_center_id} ;;
+    fields: [jakarta_mall, mall_tier]
+  }
+
+  join: order_items {
+    view_label: "📊 Sales Velocity"
+    type: left_outer
+    relationship: one_to_many
+    sql_on: ${order_items.inventory_item_id} = ${inventory_items.id} ;;
+    fields: [count, total_sale_price_idr, books_sold_today]
+  }
+}

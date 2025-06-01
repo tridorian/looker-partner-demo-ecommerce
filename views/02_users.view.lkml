@@ -123,6 +123,7 @@ view: users {
     sql: ${TABLE}.state ;;
     map_layer_name: us_states
     drill_fields: [zip, city]
+    hidden: yes
   }
 
   dimension: zip {
@@ -147,6 +148,7 @@ view: users {
            ELSE ${TABLE}.country
            END
        ;;
+    hidden: yes
   }
 
   dimension: location {
@@ -249,4 +251,152 @@ view: users {
   set: detail {
     fields: [id, name, email, age, created_date, orders.count, order_items.count]
   }
+
+# === INDONESIAN CUSTOMER TRANSFORMATIONS ===
+
+  dimension: jakarta_district {
+    label: "Jakarta District"
+    description: "Jakarta administrative districts"
+    type: string
+    case: {
+      when: {
+        sql: ${city} = 'Los Angeles' ;;
+        label: "Central Jakarta"
+      }
+      when: {
+        sql: ${city} = 'Chicago' ;;
+        label: "South Jakarta"
+      }
+      when: {
+        sql: ${city} = 'New York' ;;
+        label: "West Jakarta"
+      }
+      when: {
+        sql: ${city} = 'Houston' ;;
+        label: "East Jakarta"
+      }
+      when: {
+        sql: ${city} = 'San Francisco' ;;
+        label: "North Jakarta"
+      }
+      when: {
+        sql: ${city} = 'Memphis' ;;
+        label: "Tangerang"
+      }
+      when: {
+        sql: ${city} = 'Charleston' ;;
+        label: "Bekasi"
+      }
+      else: "Greater Jakarta Area"
+    }
+  }
+
+  dimension: customer_segment_jakarta {
+    label: "Jakarta Customer Segment"
+    description: "Customer segments specific to Jakarta book market"
+    type: string
+    case: {
+      when: {
+        sql: ${age} BETWEEN 18 AND 25 AND ${gender} = 'F' ;;
+        label: "Young Female Professionals"
+      }
+      when: {
+        sql: ${age} BETWEEN 25 AND 40 AND ${jakarta_district} LIKE '%Jakarta%' ;;
+        label: "Jakarta Families"
+      }
+      when: {
+        sql: ${age} BETWEEN 18 AND 30 AND ${traffic_source} = 'Search' ;;
+        label: "Digital Native Students"
+      }
+      when: {
+        sql: ${age} > 40 AND ${gender} = 'M' ;;
+        label: "Established Male Professionals"
+      }
+      when: {
+        sql: ${age} > 40 AND ${gender} = 'F' ;;
+        label: "Established Female Professionals"
+      }
+      when: {
+        sql: ${age} BETWEEN 13 AND 17 ;;
+        label: "Teen Readers"
+      }
+      else: "Other Segments"
+    }
+  }
+
+  dimension: traffic_source_indonesia {
+    label: "Customer Acquisition Channel"
+    description: "How customers found out about BBW Jakarta events"
+    type: string
+    case: {
+      when: {
+        sql: ${traffic_source} = 'Facebook' ;;
+        label: "Instagram/Facebook"
+      }
+      when: {
+        sql: ${traffic_source} = 'Search' ;;
+        label: "Google Search"
+      }
+      when: {
+        sql: ${traffic_source} = 'Email' ;;
+        label: "WhatsApp/Email"
+      }
+      when: {
+        sql: ${traffic_source} = 'Organic' ;;
+        label: "Word of Mouth"
+      }
+      when: {
+        sql: ${traffic_source} = 'Display' ;;
+        label: "Online Advertising"
+      }
+      else: "Other Digital"
+    }
+  }
+
+  dimension: reading_preference {
+    label: "Reading Preference"
+    description: "Inferred reading preferences based on demographics"
+    type: string
+    case: {
+      when: {
+        sql: ${customer_segment_jakarta} = 'Jakarta Families' ;;
+        label: "Children's & Family Books"
+      }
+      when: {
+        sql: ${customer_segment_jakarta} LIKE '%Professional%' ;;
+        label: "Business & Self-Help"
+      }
+      when: {
+        sql: ${customer_segment_jakarta} = 'Digital Native Students' ;;
+        label: "Fiction & Young Adult"
+      }
+      when: {
+        sql: ${customer_segment_jakarta} = 'Teen Readers' ;;
+        label: "Young Adult & Fantasy"
+      }
+      else: "Mixed Interests"
+    }
+  }
+
+  # Indonesian context for existing fields
+  dimension: country_indonesia {
+    label: "Country"
+    type: string
+    sql: 'Indonesia' ;;
+  }
+
+  dimension: state_dki {
+    label: "Province"
+    type: string
+    sql: 'DKI Jakarta' ;;
+  }
+
+  # Hide original US-specific fields during demo
+  # dimension: country {
+  #   hidden: yes
+  # }
+
+  # dimension: state {
+  #   hidden: yes
+  # }
 }
