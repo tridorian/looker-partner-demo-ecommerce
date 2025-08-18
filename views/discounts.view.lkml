@@ -1,5 +1,5 @@
 view: discounts {
-  sql_table_name: bigquery-public-data.thelook_ecommerce.discounts;;
+  sql_table_name: tridorian-looker-cc-dev.pdt_thelook_ecomm.discounts;;
 
   measure: count {
     type: count
