@@ -78,7 +78,7 @@ view: ecomm_feature_generation {
 view: ecomm_fit {
   derived_table: {
     sql_create:
-      CREATE OR REPLACE MODEL ${SQL_TABLE_NAME}
+      CREATE OR REPLACE MODEL `tridorian-looker-cc-dev.pdt_thelook_ecomm.kmeans_model5`
         OPTIONS(
                 model_type='kmeans',
                 num_clusters=5
@@ -95,7 +95,7 @@ view: ecomm_predict {
     sql: SELECT
         * EXCEPT(nearest_centroids_distance)
       FROM
-        ML.PREDICT(MODEL `bigquery-public-data.thelook_ecommerce.kmeans_model5`,
+        ML.PREDICT(MODEL `tridorian-looker-cc-dev.pdt_thelook_ecomm.kmeans_model5`,
         (SELECT * FROM
                     ${ecomm_feature_generation.SQL_TABLE_NAME}))
        ;;
