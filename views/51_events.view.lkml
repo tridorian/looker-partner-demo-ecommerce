@@ -81,7 +81,7 @@ view: events {
   dimension: viewed_product_id {
     label: "Viewed Product ID"
     type: number
-    sql: CASE WHEN ${event_type} = 'Product' THEN
+    sql: CASE WHEN ${event_type} = 'product' THEN
           CAST(SPLIT(${full_page_url}, '/')[OFFSET(ARRAY_LENGTH(SPLIT(${full_page_url}, '/'))-1)] AS INT64)
       END
        ;;
@@ -97,11 +97,11 @@ view: events {
     label: "Funnel Step"
     description: "Login -> Browse -> Add to Cart -> Checkout"
     sql: CASE
-        WHEN ${event_type} IN ('Login', 'Home') THEN '(1) Land'
-        WHEN ${event_type} IN ('Category', 'Brand') THEN '(2) Browse Inventory'
-        WHEN ${event_type} = 'Product' THEN '(3) View Product'
-        WHEN ${event_type} = 'Cart' THEN '(4) Add Item to Cart'
-        WHEN ${event_type} = 'Purchase' THEN '(5) Purchase'
+        WHEN ${event_type} IN ('login', 'home') THEN '(1) Land'
+        WHEN ${event_type} IN ('category', 'brand') THEN '(2) Browse Inventory'
+        WHEN ${event_type} = 'product' THEN '(3) View Product'
+        WHEN ${event_type} = 'cart' THEN '(4) Add Item to Cart'
+        WHEN ${event_type} = 'purchase' THEN '(5) Purchase'
       END
        ;;
   }
