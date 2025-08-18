@@ -1,4 +1,4 @@
-connection: "looker_partner_demo"
+connection: "looker-dev-playground"
 label: " eCommerce"
 include: "/queries/queries*.view" # includes all queries refinements
 include: "/views/**/*.view" # include all the views
